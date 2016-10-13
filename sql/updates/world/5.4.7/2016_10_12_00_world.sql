@@ -1,10 +1,9 @@
 -- Fix Malkorok Creature Text
 -- By Bodeguero for JadeCore.
 
-SET @ENTRY := 71454;
-DELETE FROM `creature_text` WHERE `entry`=@ENTRY;
+DELETE FROM `creature_text` WHERE `entry`=71454;
 INSERT INTO `creature_text` (`entry`, `groupid`, `id`, `text`, `type`, `language`, `probability`, `emote`, `duration`, `sound`, `comment`) VALUES
-(@ENTRY,0,0,'Nazgrim has failed us. Kor\'kron, destroy these intruders!',14,0,100,0,0,0,'MALKOROK_INTRO'),
+(@ENTRY,0,0,'Nazgrim has failed us. Korkron, destroy these intruders!',14,0,100,0,0,0,'MALKOROK_INTRO'),
 (@ENTRY,1,0,'I will never fail the Warchief!',14,0,100,0,0,0, 'MALKOROK_AGGRO'),
 (@ENTRY,2,0,'Weaklings!',14,0,100,0,0,0,'MALKOROK_ARCING_SMASH_1'),
 (@ENTRY,2,1,'You dare challenge the Warchief?',14,0,100,0,0,0,'MALKOROK_ARCING_SMASH_2'),
