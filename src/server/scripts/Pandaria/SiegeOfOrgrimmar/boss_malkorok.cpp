@@ -153,7 +153,6 @@ class boss_malkorok : public CreatureScript
 
 				events.Update(diff);
 
-
 				switch (events.ExecuteEvent())
 				{
 					case EVENT_PHASE_ONE:
