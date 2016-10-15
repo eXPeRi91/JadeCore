@@ -185,27 +185,17 @@ class instance_siege_of_orgrimmar : public InstanceMapScript
                 {
                     // Immerseus
                     case BOSS_IMMERSUS:
-                    case 724360:
-                    case 724366:
-                    case 724367:
-                    case 724368:
                         ImmersusGuid = creature->GetGUID();
                         break;
 
                     // Fallen Protectors
                     case BOSS_STONE:
-                    case 714750:
-                    case 714751:
                         StoneGuid = creature->GetGUID();
                         break;
                     case BOSS_HU:
-                    case 714790:
-                    case 714791:
                         HuGuid = creature->GetGUID();
                         break;
                     case BOSS_SUN:
-                    case 714800:
-                    case 714801:
                         SunGuid = creature->GetGUID();
                         break;
 
@@ -228,8 +218,6 @@ class instance_siege_of_orgrimmar : public InstanceMapScript
 
                     // Sha of Pride
                     case BOSS_SHA_OF_PRIDE:
-                    case 475683:
-                    case 475684:
                         ShaOfPrideGuid = creature->GetGUID();
                         break;
 
@@ -289,12 +277,12 @@ class instance_siege_of_orgrimmar : public InstanceMapScript
                 if (!creature)
                     return;
 
-                 switch (creature->GetEntry())
-                 {
-                 case BOSS_GENERAL_NAZGRIM:
-                 if (GameObject* go = instance->GetGameObject(extinazgrimGuid))
-                     go->SetGoState(GO_STATE_ACTIVE);
-                     
+                switch (creature->GetEntry())
+                {
+					case BOSS_GENERAL_NAZGRIM:
+						if (GameObject* go = instance->GetGameObject(extinazgrimGuid))
+							go->SetGoState(GO_STATE_ACTIVE);
+						break;
                  }
             }
             
@@ -604,6 +592,7 @@ class instance_siege_of_orgrimmar : public InstanceMapScript
 
                 return 0;
             }
+
             bool IsWipe()
             {
                 Map::PlayerList const& PlayerList = instance->GetPlayers();
