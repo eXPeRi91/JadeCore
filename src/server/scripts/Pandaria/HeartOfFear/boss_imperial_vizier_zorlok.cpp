@@ -37,11 +37,24 @@ enum Mobs
 
 enum Events
 {
-	EVENT_TALK_INTRO_TWO     = 1,
-	EVENT_TALK_INTRO_THREE   = 2,
-	EVENT_TALK_INTRO_FOUR    = 3,
-	EVENT_TALK_INTRO_FIVE    = 4,
-	EVENT_TALK_INTRO_SIX     = 5,
+	// Talks
+	EVENT_TALK_INTRO_TWO   = 1,
+	EVENT_TALK_INTRO_THREE = 2,
+	EVENT_TALK_INTRO_FOUR  = 3,
+	EVENT_TALK_INTRO_FIVE  = 4,
+	EVENT_TALK_INTRO_SIX   = 5,
+
+	// Spells
+	EVENT_INHALE           = 6,
+	EVENT_EXHALE           = 7,
+	EVENT_FORCE_AND_WEARVE = 8,
+	EVENT_ATTENUATION      = 9,
+	EVENT_CONVERT          = 10,
+
+	// Phase events
+	EVENT_PHASE_FIRST_PLAT,
+	EVENT_PHASE_SECON_PLAT,
+	EVENT_PHASE_THIRD_PLAT,
 };
 
 enum Objects
@@ -61,25 +74,33 @@ enum Action
 	ACTION_TALK_TRASH_C_DIE   = 7,
 };
 
+enum Phases
+{
+	PHASE_FIRST_PLATFORM  = 1,
+	PHASE_SECOND_PLATFORM = 2,
+	PHASE_THIRD_PLATFORM  = 3,
+	PHASE_TWO = 4,
+};
+
 // Talk is done in boss script not in database
 enum Talk { };
 
-Position const Ramp_Pos1 = { -2236.312744f, 217.689651f, 2.556486f };
+Position const Ramp_Pos1 = { -2236.312744f, 217.689651f, 2.55648600f };
 Position const Ramp_Pos2 = { -2317.847900f, 299.153625f, 409.896881f };
 Position const Ramp_Pos3 = { -2315.115967f, 218.375854f, 409.897125f };
 
 
 Position finalPhaseWalls1[3] =
 {
-    { -2299.195f, 282.5938f, 408.5445f, 2.383867f },
-    { -2250.401f, 234.0122f, 408.5445f, 2.333440f },
-    { -2299.63f, 233.3889f, 408.5445f, 0.7598741f }
+    { -2299.195f, 282.5938f, 408.5445f, 2.3838670f },
+    { -2250.401f, 234.0122f, 408.5445f, 2.3334400f },
+    { -2299.630f, 233.3889f, 408.5445f, 0.7598741f },
 };
 
 Position finalPhaseWalls2[3] =
 {
-    { -2255.168f, 308.7326f, 406.0f, 0.7853968f },
-    { -2240.0f, 294.0f, 406.0f, 0.7853968f },
+    { -2255.168f, 308.7326f, 406.000f, 0.7853968f },
+    { -2240.000f, 294.0000f, 406.000f, 0.7853968f },
     { -2225.753f, 280.1424f, 406.381f, 0.7853968f },
 };
 
@@ -125,8 +146,11 @@ public:
         }
 
         InstanceScript* pInstance;
-		uint8 trashMobsKilled = 0;
-
+		bool firstTrashDead = false;
+		bool secondTrashDead = false;
+		bool thirdTrashDead = false;
+		uint32 currentPhase = 0;
+        
         void Reset()
         {
             _Reset();
@@ -158,6 +182,12 @@ public:
 
             // Set new home position
             me->SetHomePosition(-2291.480957f, 243.480286f, 422.678986f, 0.753832f);
+			SoundYell(me, "The divine chose us to give mortal voice to Her divine will. We are but the vessel that enacts Her will.", 29301);
+
+			events.SetPhase(PHASE_FIRST_PLATFORM);
+			events.ScheduleEvent(EVENT_PHASE_FIRST_PLAT, 5000, 0, PHASE_FIRST_PLATFORM);
+			RampChange(true);
+			FirstPlatform(true);
         }
 
         void JustReachedHome()
@@ -198,6 +228,36 @@ public:
             }
         }
 
+		void FirstPlatform(bool check)
+		{
+			if (check = true)
+				if (MotionMaster* move = me->GetMotionMaster())
+				{
+					move->MovePoint(1, Ramp_Pos1);
+					check = false;
+				}
+		}
+
+		void SecondPlatform(bool check)
+		{
+			if (check = true)
+				if (MotionMaster* move = me->GetMotionMaster())
+				{
+					move->MovePoint(1, Ramp_Pos2);
+					check = false;
+				}
+		}
+
+		void ThirdPlatform(bool check)
+		{
+			if (check = true)
+				if (MotionMaster* move = me->GetMotionMaster())
+				{
+					move->MovePoint(1, Ramp_Pos3);
+					check = false;
+				}
+		}
+
         void CenterChange()
         {
             if (MotionMaster* motion = me->GetMotionMaster())
@@ -214,6 +274,7 @@ public:
 				{
 					// It will start when trash A enters combat
 					SoundYell(me, "The chaff of the world tumbles across our doorstep, driven by fear; Her royal swarm will whisk them away.", 29312);
+					firstTrashDead = false;
 					break;
 				}
 
@@ -221,6 +282,7 @@ public:
 				{
 					// It will start when trash A dies
 					SoundYell(me, "They were clearly unworthy of Her divine embrace.", 29313);
+					firstTrashDead = true;
 					break;
 				}
 
@@ -228,6 +290,7 @@ public:
 				{
 					// It will start when trash B enters combat
 					SoundYell(me, "They are but the waves crashing upon the mountain of Her divine will. They may rise again and again; but will accomplish nothing.", 29314);
+					secondTrashDead = false;
 					break;
 				}
 
@@ -235,6 +298,7 @@ public:
 				{
 					// It will start when trash B dies
 					SoundYell(me, "We are unfazed. We will stand firm.", 29315);
+					secondTrashDead = true;
 					break;
 				}
 
@@ -242,6 +306,7 @@ public:
 				{
 					// It will start when trash C enters combat
 					SoundYell(me, "The Divine challenges us to face these intruders.", 29316);
+					thirdTrashDead = false;
 					break;
 				}
 
@@ -249,17 +314,19 @@ public:
 				{
 					// It will start when trash C dies
 					SoundYell(me, "And so it falls to us, Her chosen voice.", 29317);
+					thirdTrashDead = true;
 					break;
 				}
 
 				case ACTION_PRE_FIGHT_EVENT:
 				{
-					trashMobsKilled++;
-					if (trashMobsKilled == 100) // Need to find correct number...
+					if (firstTrashDead == true && secondTrashDead == true && thirdTrashDead == true)
 					{
 						SoundYell(me, "We are the extension of our Empress's will.", 29303);
 						events.ScheduleEvent(EVENT_TALK_INTRO_TWO, 5000);
 					}
+					else
+						return;
 
 					break;
 				}
@@ -275,6 +342,45 @@ public:
 
 			if (me->HasUnitState(UNIT_STATE_CASTING))
 				return;
+
+			if (events.IsInPhase(PHASE_FIRST_PLATFORM))
+				currentPhase = PHASE_FIRST_PLATFORM;
+
+			if (events.IsInPhase(PHASE_SECOND_PLATFORM))
+				currentPhase = PHASE_SECOND_PLATFORM;
+
+			if (events.IsInPhase(PHASE_THIRD_PLATFORM))
+				currentPhase = PHASE_THIRD_PLATFORM;
+
+			if (events.IsInPhase(PHASE_TWO))
+				currentPhase = PHASE_TWO;
+
+			if (HealthBelowPct(80) && events.IsInPhase(PHASE_FIRST_PLATFORM))
+			{
+				events.SetPhase(PHASE_SECOND_PLATFORM);
+				events.ScheduleEvent(EVENT_PHASE_SECON_PLAT, 7000, 0, PHASE_SECOND_PLATFORM);
+				RampChange(true);
+				SecondPlatform(true);
+			}
+
+			if (HealthBelowPct(60) && events.IsInPhase(PHASE_SECOND_PLATFORM))
+			{
+				events.SetPhase(PHASE_THIRD_PLATFORM);
+				events.ScheduleEvent(EVENT_PHASE_THIRD_PLAT, 5000, 0, PHASE_THIRD_PLATFORM);
+				RampChange(true);
+				ThirdPlatform(true);
+			}
+
+			if (HealthBelowPct(40) && events.IsInPhase(PHASE_THIRD_PLATFORM))
+			{
+				CenterChange();
+				events.SetPhase(PHASE_TWO);
+				events.ScheduleEvent(EVENT_INHALE,           urand(5000, 10000),  0, PHASE_TWO);
+				events.ScheduleEvent(EVENT_EXHALE,           urand(12000, 15000), 0, PHASE_TWO);
+				events.ScheduleEvent(EVENT_FORCE_AND_WEARVE, urand(42000, 45000), 0, PHASE_TWO);
+				events.ScheduleEvent(EVENT_ATTENUATION,      urand(42000, 45000), 0, PHASE_TWO);
+				events.ScheduleEvent(EVENT_CONVERT,          urand(58000, 60000), 0, PHASE_TWO);
+			}
 
 			while (uint32 eventId = events.ExecuteEvent())
 			{
@@ -313,6 +419,63 @@ public:
 						SoundYell(me, "We will give our lives for the Empress without hesitation. She's our light and without Her our lives will be lost to darkness.", 29308);
 						me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 						me->SetReactState(ReactStates::REACT_PASSIVE);
+						break;
+					}
+
+					case EVENT_PHASE_FIRST_PLAT:
+					{
+						events.Reset();
+						events.ScheduleEvent(EVENT_INHALE,           urand(5000, 10000),  0, PHASE_FIRST_PLATFORM);
+						events.ScheduleEvent(EVENT_EXHALE,           urand(12000, 15000), 0, PHASE_FIRST_PLATFORM);
+						events.ScheduleEvent(EVENT_FORCE_AND_WEARVE, urand(42000, 45000), 0, PHASE_FIRST_PLATFORM);
+						break;
+					}
+
+					case EVENT_PHASE_SECON_PLAT:
+					{
+						events.Reset();
+						events.ScheduleEvent(EVENT_INHALE,      urand(5000, 10000),  0, PHASE_SECOND_PLATFORM);
+						events.ScheduleEvent(EVENT_EXHALE,      urand(12000, 15000), 0, PHASE_SECOND_PLATFORM);
+						events.ScheduleEvent(EVENT_ATTENUATION, urand(42000, 45000), 0, PHASE_SECOND_PLATFORM);
+						break;
+					}
+
+					case EVENT_PHASE_THIRD_PLAT:
+					{
+						events.Reset();
+						events.ScheduleEvent(EVENT_INHALE,      urand(5000, 10000),  0, PHASE_THIRD_PLATFORM);
+						events.ScheduleEvent(EVENT_EXHALE,      urand(12000, 15000), 0, PHASE_THIRD_PLATFORM);
+						events.ScheduleEvent(EVENT_CONVERT,     urand(58000, 60000), 0, PHASE_THIRD_PLATFORM);
+						break;
+					}
+
+					case EVENT_INHALE:
+					{
+						events.ScheduleEvent(EVENT_INHALE, urand(5000, 10000), 0, currentPhase);
+						break;
+					}
+
+					case EVENT_EXHALE:
+					{
+						events.ScheduleEvent(EVENT_EXHALE, urand(12000, 15000), 0, currentPhase);
+						break;
+					}
+
+					case EVENT_FORCE_AND_WEARVE:
+					{
+						events.ScheduleEvent(EVENT_FORCE_AND_WEARVE, urand(43000, 45000), 0, currentPhase);
+						break;
+					}
+
+					case EVENT_ATTENUATION:
+					{
+						events.ScheduleEvent(EVENT_ATTENUATION, urand(43000, 45000), 0, currentPhase);
+						break;
+					}
+
+					case EVENT_CONVERT:
+					{
+						events.ScheduleEvent(EVENT_CONVERT, urand(58000, 60000), 0, currentPhase);
 						break;
 					}
 				}
