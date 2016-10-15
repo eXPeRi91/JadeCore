@@ -77,7 +77,7 @@ class instance_heart_of_fear : public InstanceMapScript
 					case BOSS_IMPERIAL_VIZIER_ZORLOK:
 						zorlokGuid = creature->GetGUID();
 						break;
-					case BOSS_BLADE_LOR_TAYAK:
+					case BOSS_BLADE_LORD_TAYAK:
 						tayakGuid = creature->GetGUID();
 						break;
 					case BOSS_GARALON:
@@ -102,7 +102,7 @@ class instance_heart_of_fear : public InstanceMapScript
 					case DATA_IMPERIAL_VIZIER_ZORLOK:
 						return zorlokGuid;
 						break;
-					case DATA_BLADE_LOR_TAYAK:
+					case DATA_BLADE_LORD_TAYAK:
 						return tayakGuid;
 						break;
 					case DATA_GARALON:
