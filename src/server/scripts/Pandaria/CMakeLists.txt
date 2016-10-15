@@ -64,6 +64,8 @@ set(scripts_STAT_SRCS
   Pandaria/MogushanVault/boss_will_of_emperor.cpp
 
   Pandaria/HeartOfFear/heart_of_fear.cpp
+  Pandaria/HeartOfFear/instance_heart_of_fear.cpp
+  Pandaria/HeartOfFear/heart_of_fear.h
   Pandaria/HeartOfFear/Imperial_Zorlok.cpp
   Pandaria/HeartOfFear/Blade_Lord_Tayak.cpp  
   Pandaria/HeartOfFear/Wind_Lord_Meljarak.cpp

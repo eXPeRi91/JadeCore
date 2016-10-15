@@ -265,8 +265,9 @@ public:
 
 						events.ScheduleEvent(EVENT_DRAG_ALL_SIDE_A, 3000);
 					}
-				}
+
 					break;
+				}
 				case EVENT_DRAG_ALL_SIDE_A:
 				{
 					if (MotionMaster* motion = me->GetMotionMaster())
