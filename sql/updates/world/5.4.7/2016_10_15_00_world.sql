@@ -9,4 +9,4 @@ UPDATE `creature_template` SET `ScriptName` = '' WHERE `ScriptName` = 'Noise_Can
 UPDATE `creature_template` SET `ScriptName` = '' WHERE `ScriptName` = 'npc_attenuation';
 
 DELETE FROM `spell_script_names` WHERE `ScriptName` = 'exhale';
-DELETE FROM `spell_script_names` WHERE `ScriptName` = '';
+DELETE FROM `spell_script_names` WHERE `ScriptName` = 'spell_gen_attenuation';
