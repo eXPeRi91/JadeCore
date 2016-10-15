@@ -37,11 +37,11 @@ enum Mobs
 
 enum Events
 {
-	EVENT_TALK_INTRO_TWO   = 1,
-	EVENT_TALK_INTRO_THREE = 2,
-	EVENT_TALK_INTRO_FOUR  = 3,
-	EVENT_TALK_INTRO_FIVE  = 4,
-	EVENT_TALK_INTRO_SIX   = 5,
+	EVENT_TALK_INTRO_TWO     = 1,
+	EVENT_TALK_INTRO_THREE   = 2,
+	EVENT_TALK_INTRO_FOUR    = 3,
+	EVENT_TALK_INTRO_FIVE    = 4,
+	EVENT_TALK_INTRO_SIX     = 5,
 };
 
 enum Objects
@@ -52,8 +52,13 @@ enum Objects
 
 enum Action
 {
-	ACTION_PRE_FIGHT_EVENT = 1,
-	ACTION_ADDS_KILLED     = 2,
+	ACTION_PRE_FIGHT_EVENT    = 1,
+	ACTION_TALK_TRASH_A_START = 2,
+	ACTION_TALK_TRASH_A_DIE   = 3,
+	ACTION_TALK_TRASH_B_START = 4,
+	ACTION_TALK_TRASH_B_DIE   = 5,
+	ACTION_TALK_TRASH_C_START = 6,
+	ACTION_TALK_TRASH_C_DIE   = 7,
 };
 
 // Talk is done in boss script not in database
@@ -168,13 +173,7 @@ public:
 		void JustDied(Unit* /*killer*/)
         {
             _JustDied();
-
-			if (pInstance)
-			{
-				me->Respawn(true);
-				me->SetHealth(1);
-				DoAction(ACTION_PRE_DEATH_EVENT);
-			}
+			SoundYell(me, "We will not give in to the despair of the dark void. If Her will for us is to perish, then it shall be so.", 29302);
         }
 
         void KilledUnit(Unit* /*victim*/)
@@ -211,23 +210,55 @@ public:
 		{
 			switch (action)
 			{
-				case ACTION_PRE_FIGHT_EVENT:
+				case ACTION_TALK_TRASH_A_START:
 				{
-					// It will start when any of the trash mobs enter combat
-					SoundYell(me, "We are the extension of our Empress's will.", 29303);
-					events.ScheduleEvent(EVENT_TALK_INTRO_TWO, 5000);
+					// It will start when trash A enters combat
+					SoundYell(me, "The chaff of the world tumbles across our doorstep, driven by fear; Her royal swarm will whisk them away.", 29312);
 					break;
 				}
 
-				// 06.11.2012 (dd, mm, yy - format) hotfix - Imperial Vizier Zor'lok is no longer attackable until
-				// all of the trash mobs in Oratorium are killed
-				case ACTION_ADDS_KILLED:
+				case ACTION_TALK_TRASH_A_DIE:
+				{
+					// It will start when trash A dies
+					SoundYell(me, "They were clearly unworthy of Her divine embrace.", 29313);
+					break;
+				}
+
+				case ACTION_TALK_TRASH_B_START:
+				{
+					// It will start when trash B enters combat
+					SoundYell(me, "They are but the waves crashing upon the mountain of Her divine will. They may rise again and again; but will accomplish nothing.", 29314);
+					break;
+				}
+
+				case ACTION_TALK_TRASH_B_DIE:
+				{
+					// It will start when trash B dies
+					SoundYell(me, "We are unfazed. We will stand firm.", 29315);
+					break;
+				}
+
+				case ACTION_TALK_TRASH_C_START:
+				{
+					// It will start when trash C enters combat
+					SoundYell(me, "The Divine challenges us to face these intruders.", 29316);
+					break;
+				}
+
+				case ACTION_TALK_TRASH_C_DIE:
+				{
+					// It will start when trash C dies
+					SoundYell(me, "And so it falls to us, Her chosen voice.", 29317);
+					break;
+				}
+
+				case ACTION_PRE_FIGHT_EVENT:
 				{
 					trashMobsKilled++;
 					if (trashMobsKilled == 100) // Need to find correct number...
 					{
-						me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-						me->SetReactState(ReactStates::REACT_AGGRESSIVE);
+						SoundYell(me, "We are the extension of our Empress's will.", 29303);
+						events.ScheduleEvent(EVENT_TALK_INTRO_TWO, 5000);
 					}
 
 					break;
@@ -280,6 +311,8 @@ public:
 					case EVENT_TALK_INTRO_SIX:
 					{
 						SoundYell(me, "We will give our lives for the Empress without hesitation. She's our light and without Her our lives will be lost to darkness.", 29308);
+						me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+						me->SetReactState(ReactStates::REACT_PASSIVE);
 						break;
 					}
 				}
