@@ -1,3 +1,6 @@
+-- Fix Errors
+-- By Bodeguero for JadeCore.
+
 UPDATE `creature_template` SET `ScriptName` = '' WHERE `ScriptName` = 'boss_imperial_zorlok';
 UPDATE `creature_template` SET `ScriptName` = '' WHERE `ScriptName` = 'Cinematic_Triggers_Zorlok';
 UPDATE `creature_template` SET `ScriptName` = '' WHERE `ScriptName` = 'Cinematic_Triggers_Zorlok_Death';
