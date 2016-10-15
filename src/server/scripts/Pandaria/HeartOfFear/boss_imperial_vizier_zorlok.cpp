@@ -16,11 +16,7 @@
 * with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ObjectMgr.h"
-#include "Player.h"
-#include "ScriptMgr.h"
-#include "ScriptedCreature.h"
-#include "AchievementMgr.h"
+#include "heart_of_fear.h"
 
 enum Achievements
 {
@@ -41,7 +37,11 @@ enum Mobs
 
 enum Events
 {
-
+	EVENT_TALK_INTRO_TWO   = 1,
+	EVENT_TALK_INTRO_THREE = 2,
+	EVENT_TALK_INTRO_FOUR  = 3,
+	EVENT_TALK_INTRO_FIVE  = 4,
+	EVENT_TALK_INTRO_SIX   = 5,
 };
 
 enum Objects
@@ -50,42 +50,14 @@ enum Objects
     GOB_FINAL_PHASE_WALLS = 212943,
 };
 
-enum Talk
+enum Action
 {
-/*  Pre-boss event saying
-	DoPlaySoundToSet(me, 29303); 6 seconds
-	me->MonsterYell("We are the extension of our Empress's will.", LANG_UNIVERSAL, me->GetGUID());
-
-	DoPlaySoundToSet(me, 29304); 11 seconds
-	me->MonsterYell("Ours is but to serve in Her divine name.", LANG_UNIVERSAL, me->GetGUID());
-
-	DoPlaySoundToSet(me, 29305); 16 seconds
-	me->MonsterYell("Never to question, nor to contemplate, we simple act.", LANG_UNIVERSAL, me->GetGUID());
-
-	DoPlaySoundToSet(me, 29306); 21 seconds
-	me->MonsterYell("We fight, toil and serve so that Her vision is made for us reality.", LANG_UNIVERSAL, me->GetGUID());
-
-	DoPlaySoundToSet(me, 29307); 27 seconds
-	me->MonsterYell("Her happiness is our reward, her sorrow our failure.", LANG_UNIVERSAL, me->GetGUID());
-
-	DoPlaySoundToSet(me, 29308); 36 seconds
-	me->MonsterYell("We will give our lives for the Empress without hesitation. She's our light and without her our lives will be lost to darkness.", LANG_UNIVERSAL, me->GetGUID());
-*/
-
-/*  After death event
-	DoPlaySoundToSet(me, 29274); 6 seconds
-	me->MonsterYell("My voice's gone.. how will my subject hear me? will they still love their empress? they will return to me as the Kl'axxi I am.", LANG_UNIVERSAL, me->GetGUID());
-
-	DoPlaySoundToSet(me, 29275); 11 seconds
-	me->MonsterYell("They sent you!? They wouldn't dare!.. would they?", LANG_UNIVERSAL, me->GetGUID());
-
-	DoPlaySoundToSet(me, 29276); 16 seconds
-	me->MonsterYell("You! you will suffer for your insolence by the hand of my greatest champions! Surely they will protect their Empress.", LANG_UNIVERSAL, me->GetGUID());
-
-	DoPlaySoundToSet(me, 29277); 20 seconds
-	me->MonsterYell("Hear me subjects, your empress's is threatend by these outsiders - they wants to kill me. To Kill us all! DESTROY THEM!", LANG_UNIVERSAL, me->GetGUID());
-*/
+	ACTION_PRE_FIGHT_EVENT = 1,
+	ACTION_ADDS_KILLED     = 2,
 };
+
+// Talk is done in boss script not in database
+enum Talk { };
 
 Position const Ramp_Pos1 = { -2236.312744f, 217.689651f, 2.556486f };
 Position const Ramp_Pos2 = { -2317.847900f, 299.153625f, 409.896881f };
@@ -98,6 +70,7 @@ Position finalPhaseWalls1[3] =
     { -2250.401f, 234.0122f, 408.5445f, 2.333440f },
     { -2299.63f, 233.3889f, 408.5445f, 0.7598741f }
 };
+
 Position finalPhaseWalls2[3] =
 {
     { -2255.168f, 308.7326f, 406.0f, 0.7853968f },
@@ -105,6 +78,30 @@ Position finalPhaseWalls2[3] =
     { -2225.753f, 280.1424f, 406.381f, 0.7853968f },
 };
 
+static void ScreenText(Creature* creature, const char *text)
+{
+	if (creature->GetGUID() == NULL)
+		return;
+
+	creature->MonsterTextEmote(text, creature->GetGUID(), true);
+}
+
+void PlaySound(WorldObject* source, uint32 soundId)
+{
+	if (!source)
+		return;
+
+	source->PlayDirectSound(soundId);
+}
+
+static void SoundYell(Creature* creature, const char *text, uint32 soundId)
+{
+	if (creature->GetGUID() == NULL)
+		return;
+
+	creature->MonsterYell(text, LANG_UNIVERSAL, creature->GetGUID());
+	PlaySound(creature, soundId);
+}
 
 class boss_imperial_zorlok : public CreatureScript
 {
@@ -113,19 +110,41 @@ public:
 
     struct boss_imperial_zorlokAI : public BossAI
     {
-        boss_imperial_zorlokAI(Creature* creature) : BossAI(creature, 0)
+        boss_imperial_zorlokAI(Creature* creature) : BossAI(creature, DATA_IMPERIAL_VIZIER_ZORLOK)
         {
             me->SetLevel(93);
             me->setFaction(16);
             me->SetSpeed(MOVE_RUN, 3.5f, true);
             me->SetSpeed(MOVE_FLIGHT, 3.5f, true);
+			me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         }
 
-        InstanceScript* instance;
+        InstanceScript* pInstance;
+		uint8 trashMobsKilled = 0;
 
         void Reset()
         {
             _Reset();
+
+			switch (me->GetMap()->GetDifficulty())
+			{
+				case MAN10_DIFFICULTY:
+					me->SetMaxHealth(174454800);
+					me->SetFullHealth();
+					break;
+				case MAN10_HEROIC_DIFFICULTY:
+					me->SetMaxHealth(218067496);
+					me->SetFullHealth();
+					break;
+				case MAN25_DIFFICULTY:
+					me->SetMaxHealth(392523296);
+					me->SetFullHealth();
+					break;
+				case MAN25_HEROIC_DIFFICULTY:
+					me->SetMaxHealth(588784960);
+					me->SetFullHealth();
+					break;
+			}
         }
 
         void EnterCombat(Unit* who)
@@ -146,22 +165,16 @@ public:
 
         }
 
-        void UpdateAI(uint32 const diff)
-        {
-            events.Update(diff);
-
-            if (!UpdateVictim())
-                return;
-
-			if (me->HasUnitState(UNIT_STATE_CASTING))
-				return;
-
-            DoMeleeAttackIfReady();
-        }
-
-        void JustDied(Unit* /*killer*/)
+		void JustDied(Unit* /*killer*/)
         {
             _JustDied();
+
+			if (pInstance)
+			{
+				me->Respawn(true);
+				me->SetHealth(1);
+				DoAction(ACTION_PRE_DEATH_EVENT);
+			}
         }
 
         void KilledUnit(Unit* /*victim*/)
@@ -175,7 +188,7 @@ public:
 
             if (message)
             {
-                me->MonsterTextEmote("Imperial Vizier Zor'lok flies to one of his platforms!", me->GetGUID(), true);
+				ScreenText(me, "Imperial Vizier Zor'lok flies to one of his platforms!");
 
                 if (motion)
                     motion->MovePoint(1, me->GetPositionX(), me->GetPositionY(), 423.399048f);
@@ -192,6 +205,87 @@ public:
             {
                 motion->MovePoint(1, -2274.567383f, 259.058289f, 420.271484f);
             }
+        }
+
+		void DoAction(const int32 action)
+		{
+			switch (action)
+			{
+				case ACTION_PRE_FIGHT_EVENT:
+				{
+					// It will start when any of the trash mobs enter combat
+					SoundYell(me, "We are the extension of our Empress's will.", 29303);
+					events.ScheduleEvent(EVENT_TALK_INTRO_TWO, 5000);
+					break;
+				}
+
+				// 06.11.2012 (dd, mm, yy - format) hotfix - Imperial Vizier Zor'lok is no longer attackable until
+				// all of the trash mobs in Oratorium are killed
+				case ACTION_ADDS_KILLED:
+				{
+					trashMobsKilled++;
+					if (trashMobsKilled == 100) // Need to find correct number...
+					{
+						me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+						me->SetReactState(ReactStates::REACT_AGGRESSIVE);
+					}
+
+					break;
+				}
+			}
+		}
+
+        void UpdateAI(uint32 const diff)
+        {
+            events.Update(diff);
+
+            if (!UpdateVictim())
+                return;
+
+			if (me->HasUnitState(UNIT_STATE_CASTING))
+				return;
+
+			while (uint32 eventId = events.ExecuteEvent())
+			{
+				switch (eventId)
+				{
+					case EVENT_TALK_INTRO_TWO:
+					{
+						SoundYell(me, "Ours is but to serve in Her divine name.", 29304);
+						events.ScheduleEvent(EVENT_TALK_INTRO_THREE, 5000);
+						break;
+					}
+
+					case EVENT_TALK_INTRO_THREE:
+					{
+						SoundYell(me, "Never to question, nor to contemplate, we simply act.", 29305);
+						events.ScheduleEvent(EVENT_TALK_INTRO_FOUR, 5000);
+						break;
+					}
+
+					case EVENT_TALK_INTRO_FOUR:
+					{
+						SoundYell(me, "We fight, toil and serve so that Her vision is made for us reality.", 29306);
+						events.ScheduleEvent(EVENT_TALK_INTRO_FIVE, 6000);
+						break;
+					}
+
+					case EVENT_TALK_INTRO_FIVE:
+					{
+						SoundYell(me, "Her happiness is our reward, Her sorrow our failure.", 29307);
+						events.ScheduleEvent(EVENT_TALK_INTRO_SIX, 9000);
+						break;
+					}
+
+					case EVENT_TALK_INTRO_SIX:
+					{
+						SoundYell(me, "We will give our lives for the Empress without hesitation. She's our light and without Her our lives will be lost to darkness.", 29308);
+						break;
+					}
+				}
+			}
+
+            DoMeleeAttackIfReady();
         }
     };
 
