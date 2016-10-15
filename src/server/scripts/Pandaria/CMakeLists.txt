@@ -66,11 +66,11 @@ set(scripts_STAT_SRCS
   Pandaria/HeartOfFear/heart_of_fear.cpp
   Pandaria/HeartOfFear/instance_heart_of_fear.cpp
   Pandaria/HeartOfFear/heart_of_fear.h
-  Pandaria/HeartOfFear/Imperial_Zorlok.cpp
-  Pandaria/HeartOfFear/Blade_Lord_Tayak.cpp  
-  Pandaria/HeartOfFear/Wind_Lord_Meljarak.cpp
-  Pandaria/HeartOfFear/Garalon.cpp
-  Pandaria/HeartOfFear/Grand_Empress_Shekzeer.cpp
+  Pandaria/HeartOfFear/boss_imperial_vizier_zorlok.cpp
+  Pandaria/HeartOfFear/boss_blade_lord_tayak.cpp  
+  Pandaria/HeartOfFear/boss_wind_lord_meljarak.cpp
+  Pandaria/HeartOfFear/boss_garalon.cpp
+  Pandaria/HeartOfFear/boss_grand_empress_shekzeer.cpp
 
   Pandaria/SiegeNiuzaoTemple/siege_of_the_niuzoa_temple.cpp
   Pandaria/SiegeNiuzaoTemple/siege_of_the_niuzoa_temple.h
