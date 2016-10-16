@@ -130,23 +130,6 @@ static void ScreenText(Creature* creature, const char *text)
 	creature->MonsterTextEmote(text, creature->GetGUID(), true);
 }
 
-static void PlaySound(WorldObject* source, uint32 soundId)
-{
-	if (!source)
-		return;
-
-	source->PlayDirectSound(soundId);
-}
-
-static void SoundYell(Creature* creature, const char *text, uint32 soundId)
-{
-	if (creature->GetGUID() == NULL)
-		return;
-
-	creature->MonsterYell(text, LANG_UNIVERSAL, creature->GetGUID());
-	PlaySound(creature, soundId);
-}
-
 class boss_imperial_zorlok : public CreatureScript
 {
 public:
