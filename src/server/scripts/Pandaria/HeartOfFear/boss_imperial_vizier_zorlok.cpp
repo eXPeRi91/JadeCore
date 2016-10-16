@@ -79,11 +79,29 @@ enum Phases
 	PHASE_FIRST_PLATFORM  = 1,
 	PHASE_SECOND_PLATFORM = 2,
 	PHASE_THIRD_PLATFORM  = 3,
-	PHASE_TWO = 4,
+	PHASE_TWO             = 4,
 };
 
 // Talk is done in boss script not in database
-enum Talk { };
+enum Talk
+{
+	TALK_TRASH_A_START = 0,  // "The chaff of the world tumbles across our doorstep, driven by fear; Her royal swarm will whisk them away.", 29312
+	TALK_TRASH_A_DIE   = 1,  // "They were clearly unworthy of Her divine embrace.", 29313
+	TALK_TRASH_B_START = 2,  // "They are but the waves crashing upon the mountain of Her divine will. They may rise again and again; but will accomplish nothing.", 29314
+	TALK_TRASH_B_DIE   = 3,  // "We are unfazed. We will stand firm.", 29315
+	TALK_TRASH_C_START = 4,  // "The Divine challenges us to face these intruders.", 29316
+	TALK_TRASH_C_DIE   = 5,  // "And so it falls to us, Her chosen voice.", 29317
+
+	TALK_INTRO_ONE     = 6,  // "We are the extension of our Empress's will.", 29303
+	TALK_INTRO_TWO     = 7,  // "Ours is but to serve in Her divine name.", 29304
+	TALK_INTRO_THREE   = 8,  // "Never to question, nor to contemplate, we simply act.", 29305
+	TALK_INTRO_FOUR    = 9,  // "We fight, toil and serve so that Her vision is made for us reality.", 29306
+	TALK_INTRO_FIVE    = 10, // "Her happiness is our reward, Her sorrow our failure.", 29307
+	TALK_INTRO_SIX     = 11, // "We will give our lives for the Empress without hesitation. She's our light and without Her our lives will be lost to darkness.", 29308
+
+	TALK_AGGRO         = 12, // "The divine chose us to give mortal voice to Her divine will. We are but the vessel that enacts Her will.", 29301
+	TALK_DEATH         = 13, // "We will not give in to the despair of the dark void. If Her will for us is to perish, then it shall be so.", 29302
+};
 
 Position const Ramp_Pos1 = { -2236.312744f, 217.689651f, 2.55648600f };
 Position const Ramp_Pos2 = { -2317.847900f, 299.153625f, 409.896881f };
@@ -112,7 +130,7 @@ static void ScreenText(Creature* creature, const char *text)
 	creature->MonsterTextEmote(text, creature->GetGUID(), true);
 }
 
-void PlaySound(WorldObject* source, uint32 soundId)
+static void PlaySound(WorldObject* source, uint32 soundId)
 {
 	if (!source)
 		return;
@@ -182,7 +200,6 @@ public:
 
             // Set new home position
             me->SetHomePosition(-2291.480957f, 243.480286f, 422.678986f, 0.753832f);
-			SoundYell(me, "The divine chose us to give mortal voice to Her divine will. We are but the vessel that enacts Her will.", 29301);
 
 			events.SetPhase(PHASE_FIRST_PLATFORM);
 			events.ScheduleEvent(EVENT_PHASE_FIRST_PLAT, 5000, 0, PHASE_FIRST_PLATFORM);
@@ -203,7 +220,7 @@ public:
 		void JustDied(Unit* /*killer*/)
         {
             _JustDied();
-			SoundYell(me, "We will not give in to the despair of the dark void. If Her will for us is to perish, then it shall be so.", 29302);
+			Talk(TALK_DEATH);
         }
 
         void KilledUnit(Unit* /*victim*/)
@@ -273,7 +290,7 @@ public:
 				case ACTION_TALK_TRASH_A_START:
 				{
 					// It will start when trash A enters combat
-					SoundYell(me, "The chaff of the world tumbles across our doorstep, driven by fear; Her royal swarm will whisk them away.", 29312);
+					Talk(TALK_TRASH_A_START);
 					firstTrashDead = false;
 					break;
 				}
@@ -281,7 +298,7 @@ public:
 				case ACTION_TALK_TRASH_A_DIE:
 				{
 					// It will start when trash A dies
-					SoundYell(me, "They were clearly unworthy of Her divine embrace.", 29313);
+					Talk(TALK_TRASH_A_DIE);
 					firstTrashDead = true;
 					break;
 				}
@@ -289,7 +306,7 @@ public:
 				case ACTION_TALK_TRASH_B_START:
 				{
 					// It will start when trash B enters combat
-					SoundYell(me, "They are but the waves crashing upon the mountain of Her divine will. They may rise again and again; but will accomplish nothing.", 29314);
+					Talk(TALK_TRASH_B_START);
 					secondTrashDead = false;
 					break;
 				}
@@ -297,7 +314,7 @@ public:
 				case ACTION_TALK_TRASH_B_DIE:
 				{
 					// It will start when trash B dies
-					SoundYell(me, "We are unfazed. We will stand firm.", 29315);
+					Talk(TALK_TRASH_B_DIE);
 					secondTrashDead = true;
 					break;
 				}
@@ -305,7 +322,7 @@ public:
 				case ACTION_TALK_TRASH_C_START:
 				{
 					// It will start when trash C enters combat
-					SoundYell(me, "The Divine challenges us to face these intruders.", 29316);
+					Talk(TALK_TRASH_C_START);
 					thirdTrashDead = false;
 					break;
 				}
@@ -313,7 +330,7 @@ public:
 				case ACTION_TALK_TRASH_C_DIE:
 				{
 					// It will start when trash C dies
-					SoundYell(me, "And so it falls to us, Her chosen voice.", 29317);
+					Talk(TALK_TRASH_C_DIE);
 					thirdTrashDead = true;
 					break;
 				}
@@ -322,7 +339,7 @@ public:
 				{
 					if (firstTrashDead == true && secondTrashDead == true && thirdTrashDead == true)
 					{
-						SoundYell(me, "We are the extension of our Empress's will.", 29303);
+						Talk(TALK_INTRO_ONE);
 						events.ScheduleEvent(EVENT_TALK_INTRO_TWO, 5000);
 					}
 					else
@@ -388,35 +405,35 @@ public:
 				{
 					case EVENT_TALK_INTRO_TWO:
 					{
-						SoundYell(me, "Ours is but to serve in Her divine name.", 29304);
+						Talk(TALK_INTRO_TWO);
 						events.ScheduleEvent(EVENT_TALK_INTRO_THREE, 5000);
 						break;
 					}
 
 					case EVENT_TALK_INTRO_THREE:
 					{
-						SoundYell(me, "Never to question, nor to contemplate, we simply act.", 29305);
+						Talk(TALK_INTRO_THREE);
 						events.ScheduleEvent(EVENT_TALK_INTRO_FOUR, 5000);
 						break;
 					}
 
 					case EVENT_TALK_INTRO_FOUR:
 					{
-						SoundYell(me, "We fight, toil and serve so that Her vision is made for us reality.", 29306);
+						Talk(TALK_INTRO_FOUR);
 						events.ScheduleEvent(EVENT_TALK_INTRO_FIVE, 6000);
 						break;
 					}
 
 					case EVENT_TALK_INTRO_FIVE:
 					{
-						SoundYell(me, "Her happiness is our reward, Her sorrow our failure.", 29307);
+						Talk(TALK_INTRO_FIVE);
 						events.ScheduleEvent(EVENT_TALK_INTRO_SIX, 9000);
 						break;
 					}
 
 					case EVENT_TALK_INTRO_SIX:
 					{
-						SoundYell(me, "We will give our lives for the Empress without hesitation. She's our light and without Her our lives will be lost to darkness.", 29308);
+						Talk(TALK_INTRO_SIX);
 						me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 						me->SetReactState(ReactStates::REACT_PASSIVE);
 						break;
