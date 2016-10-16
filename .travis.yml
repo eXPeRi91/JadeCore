@@ -19,6 +19,7 @@ compiler:
   - gcc
 
 before_install:
+  - export LANG=en_US.UTF-8
   - sudo add-apt-repository ppa:kalakris/cmake -y
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
   - sudo add-apt-repository 'deb http://llvm.org/apt/precise/ llvm-toolchain-precise-3.7 main'
