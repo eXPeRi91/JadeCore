@@ -880,7 +880,7 @@ class World
         void LoadCharacterNameData();
 
         void ProcessQueryCallbacks();
-        ACE_Future_Set<PreparedQueryResult> m_realmCharCallbacks;
+        std::deque<std::future<PreparedQueryResult>> m_realmCharCallbacks;
 };
 
 typedef std::map<uint32, std::string> RealmNameMap;

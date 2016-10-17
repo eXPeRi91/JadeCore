@@ -35,6 +35,8 @@
 #include "Timer.h"
 #include "Log.h"
 
+#include <ace/OS_NS_unistd.h>
+
 MySQLConnection::MySQLConnection(MySQLConnectionInfo& connInfo) :
 m_reconnecting(false),
 m_prepareError(false),

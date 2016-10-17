@@ -1102,29 +1102,23 @@ void WorldSession::ProcessQueryCallbacks()
     PreparedQueryResult result;
 
     //! HandleCharEnumOpcode
-    if (_charEnumCallback.ready())
+    if (_charEnumCallback.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
     {
-        _charEnumCallback.get(result);
+        result = _charEnumCallback.get();
         HandleCharEnum(result);
-        _charEnumCallback.cancel();
     }
 
     if (_charCreateCallback.IsReady())
     {
         _charCreateCallback.GetResult(result);
         HandleCharCreateCallback(result, _charCreateCallback.GetParam());
-        // Don't call FreeResult() here, the callback handler will do that depending on the events in the callback chain
     }
 
     //! HandlePlayerLoginOpcode
-    if (_charLoginCallback.ready() && _accountSpellCallback.ready())
+    if (_charLoginCallback.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
     {
-        SQLQueryHolder* param;
-        _charLoginCallback.get(param);
-        _accountSpellCallback.get(result);
+        SQLQueryHolder* param = _charLoginCallback.get();
         HandlePlayerLogin((LoginQueryHolder*)param, result);
-        _charLoginCallback.cancel();
-        _accountSpellCallback.cancel();
     }
 
     //! HandleAddFriendOpcode
@@ -1146,11 +1140,10 @@ void WorldSession::ProcessQueryCallbacks()
     }
 
     //- HandleCharAddIgnoreOpcode
-    if (_addIgnoreCallback.ready())
+    if (_addIgnoreCallback.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
     {
-        _addIgnoreCallback.get(result);
+        result = _addIgnoreCallback.get();
         HandleAddIgnoreOpcodeCallBack(result);
-        _addIgnoreCallback.cancel();
     }
 
     //- SendStabledPet
@@ -1163,12 +1156,10 @@ void WorldSession::ProcessQueryCallbacks()
     }
 
     //- HandleStablePet
-    if (_stablePetCallback.ready())
+    if (_stablePetCallback.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
     {
-        uint64 param = _unstablePetCallback.GetParam();
-        _stablePetCallback.get(result);
-        HandleStablePetCallback(result, param);
-        _stablePetCallback.cancel();
+        result = _stablePetCallback.get();
+        HandleStablePetCallback(result);
     }
 
     //- HandleUnstablePet
