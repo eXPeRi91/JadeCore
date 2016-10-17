@@ -51,7 +51,7 @@ class DatabaseWorkerPool
     public:
         /* Activity state */
         DatabaseWorkerPool() :
-        _queue(new ACE_Activation_Queue())
+        _queue = new ProducerConsumerQueue<SQLOperation*>();
         {
             memset(_connectionCount, 0, sizeof(_connectionCount));
             _connections.resize(IDX_SIZE);
@@ -107,16 +107,10 @@ class DatabaseWorkerPool
         {
             TC_LOG_INFO("sql.driver", "Closing down DatabasePool '%s'.", GetDatabaseName());
 
-            //! Shuts down delaythreads for this connection pool by underlying deactivate().
-            //! The next dequeue attempt in the worker thread tasks will result in an error,
-            //! ultimately ending the worker thread task.
-            _queue->queue()->close();
-
             for (uint8 i = 0; i < _connectionCount[IDX_ASYNC]; ++i)
             {
                 T* t = _connections[IDX_ASYNC][i];
                 DatabaseWorker* worker = t->m_worker;
-                worker->wait();     //! Block until no more threads are running this task.
                 delete worker;
                 t->Close();         //! Closes the actualy MySQL connection.
             }
@@ -485,7 +479,7 @@ class DatabaseWorkerPool
 
         void Enqueue(SQLOperation* op)
         {
-            _queue->enqueue(op);
+            _queue->Push(op);
         }
 
         //! Gets a free connection in the synchronous connection pool.
@@ -520,10 +514,11 @@ class DatabaseWorkerPool
             IDX_SIZE
         };
 
-        ACE_Activation_Queue*           _queue;             //! Queue shared by async worker threads.
-        std::vector< std::vector<T*> >  _connections;
-        uint32                          _connectionCount[2];       //! Counter of MySQL connections;
-        MySQLConnectionInfo             _connectionInfo;
+        ACE_Message_Queue<ACE_SYNCH>*         _messageQueue;      //! Message Queue used by ACE_Activation_Queue
+        ProducerConsumerQueue<SQLOperation*>* _queue;             //! Queue shared by async worker threads.
+        std::vector< std::vector<T*> >        _connections;
+        uint32                                _connectionCount[2];       //! Counter of MySQL connections;
+        MySQLConnectionInfo*                  _connectionInfo;
 };
 
 #endif
