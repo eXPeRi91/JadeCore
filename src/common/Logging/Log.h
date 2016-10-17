@@ -25,6 +25,7 @@
 #include "Logger.h"
 #include "Dynamic/UnorderedMap.h"
 
+#include <stdarg.h>
 #include <string>
 
 #define LOGGER_ROOT "root"
