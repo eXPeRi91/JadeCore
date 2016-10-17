@@ -42,7 +42,7 @@ class QueryCallback
         //! The parameter of this function should be a resultset returned from either .AsyncQuery or .AsyncPQuery
         void SetFutureResult(std::future<Result>& value)
         {
-            result = std::move(value);
+            _result = std::move(value);
         }
 
         std::future<Result>& GetFutureResult()

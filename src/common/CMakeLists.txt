@@ -57,6 +57,7 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/dep/recastnavigation/Detour
   ${CMAKE_SOURCE_DIR}/src/server/database
   ${CMAKE_SOURCE_DIR}/src/server/database/Database
+  ${CMAKE_SOURCE_DIR}/src/server/database/Logging
   ${CMAKE_SOURCE_DIR}/src/server/shared
   ${CMAKE_SOURCE_DIR}/src/server/shared/Dynamic
   ${CMAKE_SOURCE_DIR}/src/server/shared/Dynamic/LinkedReference

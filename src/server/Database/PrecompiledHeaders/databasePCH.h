@@ -1,7 +1,6 @@
 #include "Config.h"
 #include "Database/AdhocStatement.h"
 #include "Database/DatabaseEnv.h"
-#include "Database/DatabaseLoader.h"
 #include "Database/DatabaseWorker.h"
 #include "Database/DatabaseWorkerPool.h"
 #include "Database/Field.h"

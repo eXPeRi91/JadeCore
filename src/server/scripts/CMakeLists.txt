@@ -38,22 +38,6 @@ file(GLOB_RECURSE sources_OutdoorPvP OutdoorPvP/*.cpp OutdoorPvP/*.h)
 file(GLOB_RECURSE sources_Spells Spells/*.cpp Spells/*.h)
 file(GLOB_RECURSE sources_World World/*.cpp World/*.h)
 
-source_group(CMake FILES CMakeLists.txt)
-source_group(PrecompiledHeaders FILES ${sources_PrecompiledHeaders})
-source_group(EasternKingdoms FILES ${sources_EasternKingdoms})
-source_group(Kalimdor FILES ${sources_Kalimdor})
-source_group(Outland FILES ${sources_Outland})
-source_group(Northrend FILES ${sources_Northrend})
-source_group(Maelstrom FILES ${sources_Maelstrom})
-source_group(OutdoorPvP FILES ${sources_OutdoorPvP})
-source_group(Commands FILES ${sources_Commands})
-source_group(Examples FILES ${sources_Examples})
-source_group(Events FILES ${sources_Events})
-source_group(Pandaria FILES ${sources_Pandaria})
-source_group(Pet FILES ${sources_Pet})
-source_group(Spells FILES ${sources_Spells})
-source_group(World FILES ${sources_World})
-
 message(STATUS "SCRIPT PREPARATIONS")
 include(Spells/CMakeLists.txt)
 
@@ -106,6 +90,7 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/src/common/Collision/Management
   ${CMAKE_SOURCE_DIR}/src/common/Collision/Models
   ${CMAKE_SOURCE_DIR}/src/common/Debugging
+  ${CMAKE_SOURCE_DIR}/src/common/Logging
   ${CMAKE_SOURCE_DIR}/src/common/Utilities
   ${CMAKE_SOURCE_DIR}/src/common/Threading
   ${CMAKE_SOURCE_DIR}/src/common/Configuration
