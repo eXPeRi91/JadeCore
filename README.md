@@ -4,10 +4,9 @@
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/JadeCore/JadeCore.svg)](http://isitmaintained.com/project/JadeCore/JadeCore "Percentage of issues still open")
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/10344/badge.svg)]("https://scan.coverity.com/projects/jadecore)
 
-5.4.8 | 5.4.7 
-:------------: | :------------:
-[![5.4.8 Build Status](https://travis-ci.org/JadeCore/JadeCore.svg?branch=5.4.8)](https://travis-ci.org/JadeCore/JadeCore/builds) | [![5.4.7 Build Status](https://travis-ci.org/JadeCore/JadeCore.svg?branch=5.4.7)](https://travis-ci.org/JadeCore/JadeCore/builds) 
-
+5.4.8 | 5.4.7 | 4.3.4 | 3.3.5
+:------------: | :------------: | :------------: | :------------:
+[![5.4.8 Build Status](https://travis-ci.org/JadeCore/JadeCore.svg?branch=5.4.8)](https://travis-ci.org/JadeCore/JadeCore/builds) | [![5.4.7 Build Status](https://travis-ci.org/JadeCore/JadeCore.svg?branch=5.4.7)](https://travis-ci.org/JadeCore/JadeCore/builds) | [![4.3.4 Build Status](https://travis-ci.org/JadeCore/JadeCore.svg?branch=4.3.4)](https://travis-ci.org/JadeCore/JadeCore/builds) | [![3.3.5 Build Status](https://travis-ci.org/JadeCore/JadeCore.svg?branch=3.3.5)](https://travis-ci.org/JadeCore/JadeCore/builds)
 
 ## Introduction
 
@@ -61,7 +60,7 @@ Read file [COPYING](COPYING)
 
 This project is brought to you thanks to:
 
-![ach_oc0xo42y](https://cloud.githubusercontent.com/assets/812439/19197100/ce6f70d0-8cc0-11e6-9ceb-b0340244cbd7.jpg)
+![ach_1beegt5k](https://cloud.githubusercontent.com/assets/812439/19450520/7a72241a-94b2-11e6-9aa9-29146cced515.jpg)
 
 - [JadeCore developers and contributors](https://github.com/JadeEmu/JadeCore/graphs/contributors)
 - [TrinityCore developers and contributors](https://github.com/TrinityCore/TrinityCore/blob/3.3.5/THANKS)
